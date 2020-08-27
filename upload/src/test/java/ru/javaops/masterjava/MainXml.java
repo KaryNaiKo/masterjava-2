@@ -2,6 +2,7 @@ package ru.javaops.masterjava;
 
 import com.google.common.base.Splitter;
 import com.google.common.io.Resources;
+import j2html.TagCreator;
 import j2html.tags.ContainerTag;
 import one.util.streamex.StreamEx;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
@@ -115,17 +116,17 @@ public class MainXml {
     }
 
     private static String toHtml(Set<User> users, String projectName) {
-        final ContainerTag table = table().with(
-                tr().with(th("FullName"), th("email")))
+        final ContainerTag table = TagCreator.table().with(
+                TagCreator.tr().with(TagCreator.th("FullName"), TagCreator.th("email")))
                 .attr("border", "1")
                 .attr("cellpadding", "8")
                 .attr("cellspacing", "0");
 
-        users.forEach(u -> table.with(tr().with(td(u.getValue()), td(u.getEmail()))));
+        users.forEach(u -> table.with(TagCreator.tr().with(td(u.getValue()), td(u.getEmail()))));
 
-        return html().with(
-                head().with(title(projectName + " users")),
-                body().with(h1(projectName + " users"), table)
+        return TagCreator.html().with(
+                TagCreator.head().with(TagCreator.title(projectName + " users")),
+                TagCreator.body().with(TagCreator.h1(projectName + " users"), table)
         ).render();
     }
 
