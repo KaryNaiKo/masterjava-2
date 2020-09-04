@@ -1,7 +1,6 @@
 package ru.javaops.masterjava.persist;
 
 import com.google.common.collect.ImmutableList;
-import ru.javaops.masterjava.persist.dao.AbstractUserDao;
 import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.UserFlag;
@@ -37,10 +36,10 @@ public class UserTestData {
     }
 
     public static void setUp() {
-        AbstractUserDao dao = DBIProvider.getDao(AbstractUserDao.class);
+        UserDao dao = DBIProvider.getDao(UserDao.class);
         dao.clean();
         DBIProvider.getDBI().useTransaction( handle -> {
-            FIST5_USERS.forEach(dao::insertGeneratedId);
+            FIST5_USERS.forEach(dao::insert);
             dao.insertGeneratedId(USER3);
         });
     }

@@ -3,6 +3,7 @@ package ru.javaops.masterjava.persist;
 import org.jdbi.v3.core.ConnectionFactory;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.SqlLogger;
+import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.slf4j.Logger;
 import ru.javaops.masterjava.persist.dao.AbstractDao;
@@ -36,7 +37,12 @@ public class DBIProvider {
             }
             jDBI = dbi;
             jDBI.installPlugin(new SqlObjectPlugin());
-            jDBI.setSqlLogger(SqlLogger.NOP_SQL_LOGGER);
+            jDBI.setSqlLogger(new SqlLogger() {
+                @Override
+                public void logBeforeExecution(StatementContext context) {
+                    System.out.println("Rendered SQL:\n" + context.getRenderedSql());
+                }
+            });
         }
     }
 
