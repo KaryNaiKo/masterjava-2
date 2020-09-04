@@ -1,11 +1,11 @@
 package ru.javaops.masterjava.persist.model;
 
-import com.bertoncelj.jdbi.entitymapper.Column;
+import org.jdbi.v3.core.mapper.reflect.ColumnName;
 
 import java.util.Objects;
 
 public class User extends BaseEntity {
-    @Column("full_name")
+    @ColumnName("full_name")
     private String fullName;
 
     private String email;

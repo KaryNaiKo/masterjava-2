@@ -1,5 +1,8 @@
 package ru.javaops.masterjava.upload;
 
+import org.slf4j.Logger;
+import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.UserFlag;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
@@ -14,8 +17,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class UserProcessor {
     private static final JaxbParser jaxbParser = new JaxbParser(ObjectFactory.class);
+    private static final UserDao dao = DBIProvider.getDao(UserDao.class);
+    private static final Logger log = getLogger(UserProcessor.class);
 
     public List<User> process(final InputStream is) throws XMLStreamException, JAXBException {
         final StaxStreamProcessor processor = new StaxStreamProcessor(is);
@@ -26,6 +33,11 @@ public class UserProcessor {
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
             final User user = new User(xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()));
             users.add(user);
+
+            DBIProvider.getDBI().useTransaction(handle -> {
+                int[] ids = dao.insertAll(users.size(), users);
+                log.info("saved {} user(s)", ids.length);
+            });
         }
         return users;
     }

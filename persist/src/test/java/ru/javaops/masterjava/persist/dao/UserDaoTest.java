@@ -11,10 +11,10 @@ import java.util.List;
 
 import static ru.javaops.masterjava.persist.UserTestData.FIST5_USERS;
 
-public class UserDaoTest extends AbstractDaoTest<UserDao> {
+public class UserDaoTest extends AbstractDaoTest<AbstractUserDao> {
 
     public UserDaoTest() {
-        super(UserDao.class);
+        super(AbstractUserDao.class);
     }
 
     @BeforeClass
@@ -31,5 +31,14 @@ public class UserDaoTest extends AbstractDaoTest<UserDao> {
     public void getWithLimit() {
         List<User> users = dao.getWithLimit(5);
         Assert.assertEquals(FIST5_USERS, users);
+    }
+
+    @Test
+    public void batchSave() throws Exception{
+        List<User> users = UserTestData.BATCH_SAVE_USERS;
+
+        dao.insertAll(1, users);
+
+        Assert.assertEquals(3, 3);
     }
 }
