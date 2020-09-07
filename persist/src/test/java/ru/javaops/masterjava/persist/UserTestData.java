@@ -40,7 +40,7 @@ public class UserTestData {
         dao.clean();
         DBIProvider.getDBI().useTransaction( handle -> {
             FIST5_USERS.forEach(dao::insert);
-            dao.insertGeneratedId(USER3);
+            dao.insert(USER3);
         });
     }
 }

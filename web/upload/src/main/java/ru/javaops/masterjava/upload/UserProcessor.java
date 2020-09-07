@@ -24,7 +24,7 @@ public class UserProcessor {
     private static final UserDao dao = DBIProvider.getDao(UserDao.class);
     private static final Logger log = getLogger(UserProcessor.class);
 
-    public List<User> process(final InputStream is) throws XMLStreamException, JAXBException {
+    public List<User> process(final InputStream is, int chunkSize) throws XMLStreamException, JAXBException {
         final StaxStreamProcessor processor = new StaxStreamProcessor(is);
         List<User> users = new ArrayList<>();
 
@@ -33,12 +33,13 @@ public class UserProcessor {
             ru.javaops.masterjava.xml.schema.User xmlUser = unmarshaller.unmarshal(processor.getReader(), ru.javaops.masterjava.xml.schema.User.class);
             final User user = new User(xmlUser.getValue(), xmlUser.getEmail(), UserFlag.valueOf(xmlUser.getFlag().value()));
             users.add(user);
-
-            DBIProvider.getDBI().useTransaction(handle -> {
-                int[] ids = dao.insertAll(users.size(), users);
-                log.info("saved {} user(s)", ids.length);
-            });
         }
+
+        DBIProvider.getDBI().useTransaction(handle -> {
+            int[] ids = dao.insertAll(chunkSize, users);
+            log.info("saved {} user(s)", ids.length);
+        });
+
         return users;
     }
 }
